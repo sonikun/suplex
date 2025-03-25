@@ -1,4 +1,4 @@
-### docker-compose.yml
+# docker-compose.yml
 ```
   plex:
     container_name: plex
@@ -22,7 +22,7 @@
         ipv4_address:
 ```
 
-### updating plex server
+# updating plex server
 - open container in portainer,
 - at top-right, beside duplicate, use 'recreate' and turn on 'repull image'.
 
