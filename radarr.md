@@ -19,12 +19,12 @@
 ```
 
 # Format
-- Standard Movie Format
+### Standard Movie Format
 ```
 {Movie CleanTitle} {(Release Year)} {imdb-{ImdbId}} {edition-{Edition Tags}} {[Quality Full]}{[MediaInfo 3D]}{[MediaInfo VideoDynamicRangeType]}{[Mediainfo AudioCodec}{ Mediainfo AudioChannels]}[{Mediainfo VideoCodec}]{-Release Group}
 ```
 
-- Movie Folder Format
+### Movie Folder Format
 ```
 {Movie Title} ({Release Year}) {tmdb-{TMdbid}}
 ```
