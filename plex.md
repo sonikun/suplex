@@ -29,12 +29,12 @@
 or
 - `cd` to where docker-compose.yml is located,
 ```
-$ cd /root/docker/docker-compose
+cd /root/docker/docker-compose
 ```
 - run the followings
 ```
-$ docker-compose pull plex
+docker-compose pull plex
 ```
 ```
-$ docker-compose up -d plex
+docker-compose up -d plex
 ```
