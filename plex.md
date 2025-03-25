@@ -1,3 +1,5 @@
+> Plex server won't be updated starting **1st April 2025**
+
 # docker-compose.yml
 ```
   plex:
