@@ -30,5 +30,5 @@ or
 1. cd to where docker-compose.yml is located,
 `cd /root/docker/docker-compose`
 2. run the followings
-`docker-compose pull plex`
-`docker-compose up -d plex`
+```docker-compose pull plex```
+```docker-compose up -d plex```
