@@ -1,6 +1,20 @@
 # docker-compose.yml
 ```
-
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:develop
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+#      - DOCKER_MODS=ghcr.io/themepark-dev/theme.park:sonarr  
+#      - TP_THEME = hotpink
+    volumes:
+      - /root/docker/sonarr:/config
+      - /home/ubuntu/YeetersShows:/media/gdrive/
+      - /home/ubuntu/Onedrive/Plex:/media/onedrive/
+    ports:
+      - 8989:8989
+    restart: unless-stopped
 ```
 
 # Formats
