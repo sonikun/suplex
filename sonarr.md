@@ -6,8 +6,6 @@
     environment:
       - PUID=1000
       - PGID=1000
-#      - DOCKER_MODS=ghcr.io/themepark-dev/theme.park:sonarr  
-#      - TP_THEME = hotpink
     volumes:
       - /root/docker/sonarr:/config
       - /home/ubuntu/YeetersShows:/media/gdrive/
