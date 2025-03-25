@@ -1,4 +1,5 @@
 ### docker-compose.yml
+```
   plex:
     container_name: plex
     image: linuxserver/plex
@@ -19,3 +20,4 @@
     networks:
       my_network:
         ipv4_address:
+```
