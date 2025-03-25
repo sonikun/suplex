@@ -1,0 +1,343 @@
+version: "3.8"
+networks:
+  my_network:
+    external: true
+services:
+  plex:
+    container_name: plex
+    image: linuxserver/plex
+    ports:
+      - 32400:32400
+    environment:
+      - VERSION=docker
+      - PLEX_CLAIM= #optional
+      - PLEX_UID=1000
+      - PLEX_GID=1000
+      - TZ=Asia/Kolkata
+    volumes:
+      - /root/docker/plex:/config
+      - /root/docker/plex/transcode:/transcode
+      - /home/ubuntu/YeetersShows:/media/gdrive/
+      - /home/ubuntu/Onedrive/Plex:/media/onedrive/
+    restart: unless-stopped
+    networks:
+      my_network:
+        ipv4_address:
+
+################################################################
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    networks:
+      my_network:
+        ipv4_address: 
+    restart: unless-stopped
+    volumes:
+      - /root/docker/portainer:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - '9000:9000'
+
+################################################################
+
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    networks:
+      my_network:
+        ipv4_address:
+    volumes:
+      - /root/docker/jellyfin:/config
+      - /root/docker/jellyfin/cache:/cache
+      - /home/ubuntu/YeetersShows:/media/gdrive/
+      - /home/ubuntu/Onedrive/Plex:/media/onedrive/
+    ports:
+      - '8096:8096/tcp'
+    restart: unless-stopped
+    # Optional - alternative address used for autodiscovery
+    environment:
+      - JELLYFIN_PublishedServerUrl=http://example.com
+    # Optional - may be necessary for docker healthcheck to pass if running in host network mode
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+################################################################
+
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    ports:
+      - 3000:3000
+    volumes:
+      - /root/docker/homepage:/app/config # Make sure your local config directory exists
+      - /var/run/docker.sock:/var/run/docker.sock:ro # optional, for docker integrations
+    restart: unless-stopped
+    networks:
+      my_network:
+        ipv4_address:
+
+################################################################
+
+  overseerr:
+    image: sctx/overseerr:latest
+    container_name: overseerr
+    environment:
+      - LOG_LEVEL=debug
+      - PORT=5055 #optional
+    ports:
+      - 5055:5055
+    volumes:
+      - /root/docker/overseerr:/config
+    restart: unless-stopped
+    networks:
+      my_network:
+        ipv4_address: 
+
+################################################################
+
+  nginx:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      # These ports are in format <host-port>:<container-port>
+      - '80:80' # Public HTTP Port
+      - '443:443' # Public HTTPS Port
+      - '81:81' # Admin Web Port
+      # Add any other Stream port you want to expose
+      # - '21:21' # FTP
+
+    # Uncomment the next line if you uncomment anything in the section
+    # environment:
+      # Uncomment this if you want to change the location of
+      # the SQLite DB file within the container
+      # DB_SQLITE_FILE: "/data/database.sqlite"
+
+      # Uncomment this if IPv6 is not enabled on your host
+      # DISABLE_IPV6: 'true'
+    volumes:
+      - /root/docker/nginx:/data
+      - ./letsencrypt:/etc/letsencrypt
+#    networks:
+#      my_network:
+#        ipv4_address: 
+#################################################################
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /root/docker/radarr:/config
+      - /home/ubuntu/Onedrive/Plex:/media/onedrive/
+      - /home/ubuntu/YeetersShows:/media/gdrive/
+    ports:
+      - 7878:7878
+    networks:
+      my_network:
+        ipv4_address: 
+    restart: unless-stopped
+
+################################################################
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:develop
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+#      - DOCKER_MODS=ghcr.io/themepark-dev/theme.park:sonarr  
+#      - TP_THEME = hotpink
+    volumes:
+      - /root/docker/sonarr:/config
+      - /home/ubuntu/YeetersShows:/media/gdrive/
+      - /home/ubuntu/Onedrive/Plex:/media/onedrive/
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+
+################################################################
+
+  plextraktsync:
+    image: ghcr.io/taxel/plextraktsync:latest
+    command: sync
+    container_name: plextraktsync
+    restart: always
+    volumes:
+      - /root/docker/plextraktsync:/app/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Kolkata
+
+################################################################
+
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    volumes:
+      - /root/docker/uptime-kuma:/app/data
+    ports:
+      - "3001:3001"  # <Host Port>:<Container Port>
+    restart: always
+
+
+################################################################
+
+
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /root/docker/lidarr:/config
+      - /home/ubuntu/Onedrive/Plex/music:/music #optional
+    ports:
+      - 8686:8686
+    restart: unless-stopped
+
+###########################################################
+
+  glances:
+    container_name: glances
+    image: nicolargo/glances:latest
+    restart: always
+    pid: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - "GLANCES_OPT=-w"
+    ports:
+      - 61208:61208
+    labels:
+      - "traefik.port=61208"
+      - "traefik.frontend.rule=Host:glances.docker.localhost"
+
+#######################################################
+
+  organizr:
+    image: organizr/organizr:latest
+    container_name: organizr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Kolkata
+    volumes:
+      - /root/docker/organizr:/config
+    ports:
+      - 9983:80
+    restart: unless-stopped
+
+##########################################################
+
+  wizarr:
+    container_name: wizarr
+    image: ghcr.io/wizarrrr/wizarr:latest
+    #user: 1000:1000 #Optional but recommended, sets the user uid that Wizarr will run with
+    ports:
+      - 5690:5690
+    volumes:
+      - /root/docker/wizarr/config:/data/database
+    environment:
+      - APP_URL= #URL at which you will access and share 
+      - DISABLE_BUILTIN_AUTH=false #Set to true ONLY if you are using another auth provider (Authelia, Authentik, etc)
+      - TZ=Asia/Kolkata #Set your timezone here
+
+#############################################################
+
+  duckdns:
+    image: ghcr.io/linuxserver/duckdns:latest
+    container_name: duckdns
+    environment:
+      - PUID=1000 #optional
+      - PGID=1000 #optional
+      - TZ=Asia/Kolkata
+      - SUBDOMAINS=
+      - TOKEN=
+      - LOG_FILE=false #optional
+    volumes:
+      - /root/docker/duckdns/config:/config #optional
+    restart: unless-stopped
+
+#################################################################
+
+  couchdb:
+    image: couchdb
+    container_name: obsidian-livesync
+    user: 1000:1000
+    environment:
+      - COUCHDB_USER=Staging4570
+      - COUCHDB_PASSWORD=Spectrum$Strategic$Blouse5
+    volumes:
+      - ./data:/opt/couchdb/data
+      - ./local.ini:/opt/couchdb/etc/local.ini
+    ports:
+      - 5984:5984
+    restart: unless-stopped
+
+###############################################################
+
+  plexautolanguages:
+    image: remirigal/plex-auto-languages:latest
+    container_name: PlexAutoLanguages
+    environment:
+      - TZ=Asia/Kolkata
+      - PLEX_URL=
+      - PLEX_TOKEN=
+    volumes:
+      # make sure you have a file named 'config.yaml' in the 'config' dir
+      - /root/docker/plexautolanguages/config:/config
+    restart: unless-stopped
+
+##############################################################
+
+  homarr:
+    container_name: homarr
+    image: ghcr.io/ajnart/homarr:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
+      - /root/docker/homarr:/configs
+      - /root/docker/homarr:/icons
+      - /root/docker/homarr:/data
+    ports:
+      - '7575:7575'
+
+#############################################################
+
+  plexanisync:
+    container_name: plexanisync
+    image: 'ghcr.io/rickdb/plexanisync:latest'
+    restart: unless-stopped
+    environment:
+      - PLEX_SECTION=Anime Movies|Anime Shows
+      - PLEX_URL=http://127.0.0.1:32400
+      - PLEX_TOKEN=
+      - ANI_USERNAME=
+      - ANI_TOKEN=
+      - INTERVAL=3600
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+#      - '/path/to/your/custom_mappings.yaml:/plexanisync/custom_mappings.yaml'
+
+################################################################
+
+  scheduler:
+    image: mcuadros/ofelia:latest
+    container_name: scheduler
+    restart: unles-stopped
+    depends_on:
+      - plextraktsync
+    command: daemon --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      ofelia.job-run.plextraktsync.schedule: "@every 3h"
+      ofelia.job-run.plextraktsync.container: "plextraktsync"
