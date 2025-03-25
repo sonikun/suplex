@@ -23,13 +23,15 @@
 ```
 
 ### updating plex server
-1. open container in portainer,
-2. at top-right, beside duplicate, use 'recreate' and turn on 'repull image'.
+- open container in portainer,
+- at top-right, beside duplicate, use 'recreate' and turn on 'repull image'.
 
 or
-1. cd to where docker-compose.yml is located,
-`cd /root/docker/docker-compose`
-2. run the followings
+- `cd` to where docker-compose.yml is located,
+```
+cd /root/docker/docker-compose
+```
+- run the followings
 ```
 docker-compose pull plex
 ```
