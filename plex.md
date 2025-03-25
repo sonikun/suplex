@@ -21,3 +21,14 @@
       my_network:
         ipv4_address:
 ```
+
+### updating plex server
+1. open container in portainer,
+2. at top-right, beside duplicate, use 'recreate' and turn on 'repull image'.
+
+or
+1. cd to where docker-compose.yml is located,
+`cd /root/docker/docker-compose`
+2. run the followings
+`docker-compose pull plex`
+`docker-compose up -d plex`
