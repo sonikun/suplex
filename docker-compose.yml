@@ -7,18 +7,7 @@ services:
 
 ################################################################
 
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: portainer
-    networks:
-      my_network:
-        ipv4_address: 
-    restart: unless-stopped
-    volumes:
-      - /root/docker/portainer:/data
-      - /var/run/docker.sock:/var/run/docker.sock
-    ports:
-      - '9000:9000'
+
 
 ################################################################
 
@@ -38,113 +27,14 @@ services:
       my_network:
         ipv4_address:
 
-################################################################
 
-  overseerr:
-    image: sctx/overseerr:latest
-    container_name: overseerr
-    environment:
-      - LOG_LEVEL=debug
-      - PORT=5055 #optional
-    ports:
-      - 5055:5055
-    volumes:
-      - /root/docker/overseerr:/config
-    restart: unless-stopped
-    networks:
-      my_network:
-        ipv4_address: 
-
-################################################################
-
-  nginx:
-    image: jc21/nginx-proxy-manager:latest
-    container_name: nginx
-    restart: unless-stopped
-    ports:
-      # These ports are in format <host-port>:<container-port>
-      - '80:80' # Public HTTP Port
-      - '443:443' # Public HTTPS Port
-      - '81:81' # Admin Web Port
-      # Add any other Stream port you want to expose
-      # - '21:21' # FTP
-
-    # Uncomment the next line if you uncomment anything in the section
-    # environment:
-      # Uncomment this if you want to change the location of
-      # the SQLite DB file within the container
-      # DB_SQLITE_FILE: "/data/database.sqlite"
-
-      # Uncomment this if IPv6 is not enabled on your host
-      # DISABLE_IPV6: 'true'
-    volumes:
-      - /root/docker/nginx:/data
-      - ./letsencrypt:/etc/letsencrypt
-#    networks:
-#      my_network:
-#        ipv4_address: 
-#################################################################
-
-  radarr:
-    image: lscr.io/linuxserver/radarr:latest
-    container_name: radarr
-    environment:
-      - PUID=1000
-      - PGID=1000
-    volumes:
-      - /root/docker/radarr:/config
-      - /home/ubuntu/Onedrive/Plex:/media/onedrive/
-      - /home/ubuntu/YeetersShows:/media/gdrive/
-    ports:
-      - 7878:7878
-    networks:
-      my_network:
-        ipv4_address: 
-    restart: unless-stopped
-
-################################################################
-
-  sonarr:
-    image: lscr.io/linuxserver/sonarr:develop
-    container_name: sonarr
-    environment:
-      - PUID=1000
-      - PGID=1000
-#      - DOCKER_MODS=ghcr.io/themepark-dev/theme.park:sonarr  
-#      - TP_THEME = hotpink
-    volumes:
-      - /root/docker/sonarr:/config
-      - /home/ubuntu/YeetersShows:/media/gdrive/
-      - /home/ubuntu/Onedrive/Plex:/media/onedrive/
-    ports:
-      - 8989:8989
-    restart: unless-stopped
-
-################################################################
-
-  plextraktsync:
-    image: ghcr.io/taxel/plextraktsync:latest
-    command: sync
-    container_name: plextraktsync
-    restart: always
-    volumes:
-      - /root/docker/plextraktsync:/app/config
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Asia/Kolkata
 
 ################################################################
 
 
-  uptime-kuma:
-    image: louislam/uptime-kuma:latest
-    container_name: uptime-kuma
-    volumes:
-      - /root/docker/uptime-kuma:/app/data
-    ports:
-      - "3001:3001"  # <Host Port>:<Container Port>
-    restart: always
+
+################################################################
+
 
 
 ################################################################
